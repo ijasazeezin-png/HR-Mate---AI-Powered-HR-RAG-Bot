@@ -7,5 +7,5 @@ langchain-huggingface
 langchain-chroma
 sentence-transformers
 chromadb
-pymupdf
 protobuf<7,>=3.20
+PyMuPDF
