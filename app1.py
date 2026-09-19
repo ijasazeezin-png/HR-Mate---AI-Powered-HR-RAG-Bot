@@ -4,7 +4,6 @@ import pymupdf
 import streamlit as st
 from groq import Groq
 from sentence_transformers import SentenceTransformer
-from tensorflow.keras.layers import Embedding
 import torch.nn as nn
 
 PDF_PATH = "Northgate_Solutions_HR_Policy_Manual.pdf"
