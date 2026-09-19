@@ -1,0 +1,11 @@
+streamlit
+langchain-core
+langchain-text-splitters
+langchain-community
+langchain-groq
+langchain-huggingface
+langchain-chroma
+sentence-transformers
+chromadb
+pymupdf
+protobuf<7,>=3.20
