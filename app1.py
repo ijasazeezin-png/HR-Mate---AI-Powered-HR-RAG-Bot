@@ -1,32 +1,11 @@
 import os
+import pandas as pd
 import numpy as np
 import pymupdf
 import streamlit as st
 from groq import Groq
 from sentence_transformers import SentenceTransformer
 import torch.nn as nn
-
-"""
-Meridian Global Logistics - Employee Assistant
-------------------------------------------------
-Two modes, chosen automatically based on the message:
-
-1. STRUCTURED LOOKUP: if the message contains an Employee ID (e.g. MGL10042),
-   the bot looks up that employee's real record from Employee_Master.xlsx and
-   answers from it directly - no LLM guessing involved for numbers like leave
-   balance. If the message also asks to apply for Casual or Sick leave, the
-   bot checks the balance and updates it.
-
-2. RAG FALLBACK: if no Employee ID is found, the bot answers general company/
-   policy questions using retrieval over Meridian_Global_Logistics_Handbook.pdf.
-
-Setup:
-    1. Keep Employee_Master.xlsx and Meridian_Global_Logistics_Handbook.pdf in
-       the same folder as this file.
-    2. Set GROQ_API_KEY as an environment variable, or in .streamlit/secrets.toml
-    3. pip install -r requirements_logistics.txt
-    4. streamlit run app_logistics.py
-"""
 
 EMPLOYEE_FILE = "Employee_Master.xlsx"
 HANDBOOK_FILE = "Meridian_Global_Logistics_Handbook.pdf"
