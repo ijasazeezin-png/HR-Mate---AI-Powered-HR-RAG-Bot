@@ -17,7 +17,7 @@ def load_knowledge_base():
     client = Groq(api_key="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")
     embedder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
-    doc = pymupdf.open(PDF_PATH)
+    doc = pymupdf.open("Meridian_Global_Logistics_Handbook.pdf")
     chunks = []
     for page in doc:
         text = page.get_text()
