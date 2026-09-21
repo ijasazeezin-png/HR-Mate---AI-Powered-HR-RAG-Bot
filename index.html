@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Northgate Solutions</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: #1a1a1a;
+    line-height: 1.6;
+  }
+  header {
+    background: #1a2f4b;
+    color: white;
+    padding: 60px 24px;
+    text-align: center;
+  }
+  header h1 { font-size: 2.2rem; margin-bottom: 12px; }
+  header p { font-size: 1.1rem; opacity: 0.85; max-width: 600px; margin: 0 auto; }
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
+  main h2 { margin-bottom: 12px; color: #1a2f4b; }
+  main p { margin-bottom: 20px; color: #444; }
+  .hint {
+    background: #f0f4f8;
+    border-left: 4px solid #1a2f4b;
+    padding: 16px 20px;
+    border-radius: 6px;
+    margin-top: 24px;
+  }
+
+  /* --- Chat widget --- */
+  #chatbot-bubble {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #1a2f4b;
+    color: white;
+    font-size: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    z-index: 9999;
+    transition: transform 0.15s ease;
+  }
+  #chatbot-bubble:hover { transform: scale(1.06); }
+
+  #chatbot-window {
+    position: fixed;
+    bottom: 96px;
+    right: 24px;
+    width: 380px;
+    height: 600px;
+    max-height: 75vh;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    display: none;
+    z-index: 9999;
+    background: white;
+  }
+  #chatbot-window iframe { width: 100%; height: 100%; border: none; }
+
+  @media (max-width: 480px) {
+    #chatbot-window { width: 92vw; right: 4vw; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Northgate Solutions</h1>
+  <p>Have a question about company policy? Click the chat bubble in the corner — our HR assistant can help instantly.</p>
+</header>
+
+<main>
+  <h2>Employee Resources</h2>
+  <p>This page hosts our internal HR policy assistant. Ask about leave entitlements,
+  work-from-home rules, reimbursement limits, and more — answers come directly
+  from the official HR Policy Manual, with page references included.</p>
+  <div class="hint">
+    Tip: try asking "how many days of paternity leave do I get?" or
+    "what's the reimbursement limit for client meals?"
+  </div>
+</main>
+
+<div id="chatbot-bubble" onclick="toggleChatbot()">💬</div>
+
+<div id="chatbot-window">
+  <iframe src="https://YOUR-APP-NAME.streamlit.app/?embed=true"></iframe>
+</div>
+
+<script>
+  function toggleChatbot() {
+    const win = document.getElementById('chatbot-window');
+    win.style.display = win.style.display === 'block' ? 'none' : 'block';
+  }
+</script>
+
+</body>
+</html>
