@@ -6,6 +6,7 @@ import streamlit as st
 from groq import Groq
 from sentence_transformers import SentenceTransformer
 import torch.nn as nn
+import re
 
 EMPLOYEE_FILE = "Employee_Master.xlsx"
 HANDBOOK_FILE = "Meridian_Global_Logistics_Handbook.pdf"
