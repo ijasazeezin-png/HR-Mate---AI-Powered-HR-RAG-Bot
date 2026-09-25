@@ -34,7 +34,7 @@ st.caption("Your AI assistant for Meridian Global Logistics employee policies")
 
 @st.cache_resource(show_spinner="Loading the document and building the search index...")
 def load_knowledge_base():
-    client = Groq(api_key="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")
+    client = Groq(api_key=st.secrets.get("GROQ_API_KEY", ""))
     embedder = SentenceTransformer(EMBED_MODEL)
 
     doc = pymupdf.open(PDF_PATH)
@@ -114,7 +114,8 @@ def handle_message(user_text: str) -> str:
         return (
             f"✅ Applied {days} day(s) of {leave_type_key} leave for {row['Full_Name']}. "
             f"Remaining {leave_type_key} balance: {new_balance} day(s). "
-            f"{hr_name} ({hr_email}) has been informed of your leave."
+            f"{hr_name} ({hr_email}) has been informed of your leave, and a confirmation "
+            f"email will be sent to {row['Email']}."
         )
 
     # --- Intent: just mentioned an employee ID, show balance ---
