@@ -1,3 +1,4 @@
+import os
 import re
 from pathlib import Path
 
@@ -5,6 +6,7 @@ import numpy as np
 import pandas as pd
 import pymupdf
 import streamlit as st
+from dotenv import load_dotenv
 from groq import Groq
 from sentence_transformers import SentenceTransformer
 
@@ -31,10 +33,23 @@ st.set_page_config(
 st.title("📦 Meridian Employee Assistant")
 st.caption("Your AI assistant for Meridian Global Logistics employee policies")
 
+# Load .env from the SAME folder as this script, regardless of which folder
+# the terminal happens to be in when you run `streamlit run app1.py`.
+load_dotenv(dotenv_path=Path(__file__).parent / ".env")
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+if not GROQ_API_KEY:
+    st.error(
+        "GROQ_API_KEY not found. Make sure a file named `.env` sits in the same "
+        "folder as app1.py, containing a line like:\n\nGROQ_API_KEY=gsk_your_actual_key_here"
+    )
+    st.stop()
+
+client = Groq(api_key=GROQ_API_KEY)
+load_dotenv(dotenv_path=Path(__file__).parent / ".env", override=True)
 
 @st.cache_resource(show_spinner="Loading the document and building the search index...")
 def load_knowledge_base():
-    client = Groq(api_key=st.secrets.get("GROQ_API_KEY", ""))
     embedder = SentenceTransformer(EMBED_MODEL)
 
     doc = pymupdf.open(PDF_PATH)
@@ -49,10 +64,10 @@ def load_knowledge_base():
     chunk_embeddings = embedder.encode(chunks, normalize_embeddings=True)
     employees_df = pd.read_excel(EMPLOYEE_FILE)
 
-    return client, embedder, chunks, chunk_embeddings, employees_df
+    return embedder, chunks, chunk_embeddings, employees_df
 
 
-client, embedder, chunks, chunk_embeddings, employees_df = load_knowledge_base()
+embedder, chunks, chunk_embeddings, employees_df = load_knowledge_base()
 
 
 def find_hr_contact(location: str):
@@ -76,15 +91,12 @@ def handle_message(user_text: str) -> str:
     """Rule-based handling for employee ID lookups and leave applications;
     falls back to the RAG + LLM flow for everything else."""
 
-    # Remember the last employee ID mentioned in this session, so the person
-    # doesn't have to repeat it in follow-up messages.
     id_match = EMP_ID_PATTERN.search(user_text)
     if id_match:
         st.session_state.current_emp_id = id_match.group(0).upper()
 
     emp_id = st.session_state.get("current_emp_id")
 
-    # --- Intent: apply for leave ("apply for 2 days casual leave") ---
     day_match = LEAVE_REQUEST_PATTERN.search(user_text)
     leave_type_key = next((k for k in LEAVE_TYPE_COLUMNS if k in user_text.lower()), None)
 
@@ -118,7 +130,6 @@ def handle_message(user_text: str) -> str:
             f"email will be sent to {row['Email']}."
         )
 
-    # --- Intent: just mentioned an employee ID, show balance ---
     if id_match:
         row = lookup_employee(emp_id)
         if row is None:
@@ -130,7 +141,6 @@ def handle_message(user_text: str) -> str:
             f"Earned: {row['Earned_Leave_Balance']}d."
         )
 
-    # --- Otherwise: normal RAG-grounded HR policy question ---
     question_embedding = embedder.encode([user_text], normalize_embeddings=True)[0]
     scores = chunk_embeddings @ question_embedding
     top_chunks = [chunks[i] for i in np.argsort(scores)[::-1][:TOP_K]]
@@ -140,7 +150,10 @@ def handle_message(user_text: str) -> str:
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {user_text}"},
     ]
-    completion = client.chat.completions.create(model=LLM_MODEL, messages=api_messages)
+    completion = client.chat.completions.create(
+        model=LLM_MODEL,
+        messages=api_messages
+    )
     return completion.choices[0].message.content
 
 
