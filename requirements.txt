@@ -11,3 +11,4 @@ pymupdf
 protobuf<7,>=3.20
 pandas
 openpyxl
+tensorflow
